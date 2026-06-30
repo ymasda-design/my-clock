@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JR Platform Clock - Perfect Manual Layout</title>
+    <title>JR Station Clock - Perfect Replica</title>
     <style>
         body {
             margin: 0;
@@ -18,50 +18,62 @@
             box-sizing: border-box;
         }
 
-        /* 文字盤の長方形（横188px、縦100px） */
-        .clock {
+        /* ★外枠：ご要望通り縦方向を大きくし、本物のような大きな角丸にしました */
+        .clock-frame {
             width: 188px;
-            height: 100px;
-            border: 4px solid #ccff00; /* 蛍光黄色の内枠 */
-            border-radius: 8px;
-            position: relative;
-            background-color: #ccff00; /* 蛍光黄色の文字盤 */
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-        }
-
-        /* 数字全体の共通設定 */
-        .number {
-            position: absolute;
-            font-size: 15px;
-            font-weight: 900;
-            color: #004d26;
-            width: 24px;
-            height: 24px;
+            height: 160px;
+            background-color: #004d26; 
+            border: 4px solid #ccff00; /* 蛍光黄色の細い縁ライン */
+            border-radius: 24px;       /* 本物らしい大きな角丸 */
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        
-        /* ★画像を見ながら「11 12 1」の間隔が均等に広がるよう手動で絶対配置 */
-        .n12 { top: 2px;    left: calc(50% - 12px); }
-        .n1  { top: 5px;    right: 36px; }
-        .n2  { top: 22px;   right: 12px; }
-        .n3  { top: calc(50% - 12px); right: 4px; }
-        .n4  { bottom: 22px; right: 12px; }
-        .n5  { bottom: 5px;  right: 36px; }
-        .n6  { bottom: 2px; left: calc(50% - 12px); }
-        .n7  { bottom: 5px;  left: 36px; }
-        .n8  { bottom: 22px; left: 12px; }
-        .n9  { top: calc(50% - 12px); left: 4px; }
-        .n10 { top: 22px;   left: 12px; }
-        .n11 { top: 5px;    left: 36px; }
 
-        /* 中心点 */
-        .clock::after {
+        /* ★文字盤：写真通り、綺麗な正円（丸型）の蛍光黄色ベース */
+        .clock-face {
+            width: 136px;
+            height: 136px;
+            border-radius: 50%;
+            position: relative;
+            background-color: #ccff00;
+        }
+
+        /* 数字全体の共通設定（円形に綺麗に配置するためのベース） */
+        .number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 18px; /* 写真に合わせて数字を少し大きめで力強く */
+            font-weight: 900;
+            color: #111111;
+            padding-top: 2px;
+            box-sizing: border-box;
+        }
+
+        /* 本物と同じ、綺麗な正円の角度に合わせて回転配置 */
+        .n1  { transform: rotate(30deg);  } .n1 span  { display: block; transform: rotate(-30deg); }
+        .n2  { transform: rotate(60deg);  } .n2 span  { display: block; transform: rotate(-60deg); }
+        .n3  { transform: rotate(90deg);  } .n3 span  { display: block; transform: rotate(-90deg); }
+        .n4  { transform: rotate(120deg); } .n4 span  { display: block; transform: rotate(-120deg); }
+        .n5  { transform: rotate(150deg); } .n5 span  { display: block; transform: rotate(-150deg); }
+        .n6  { transform: rotate(180deg); } .n6 span  { display: block; transform: rotate(-180deg); }
+        .n7  { transform: rotate(210deg); } .n7 span  { display: block; transform: rotate(-210deg); }
+        .n8  { transform: rotate(240deg); } .n8 span  { display: block; transform: rotate(-240deg); }
+        .n9  { transform: rotate(270deg); } .n9 span  { display: block; transform: rotate(-270deg); }
+        .n10 { transform: rotate(300deg); } .n10 span { display: block; transform: rotate(-300deg); }
+        .n11 { transform: rotate(330deg); } .n11 span { display: block; transform: rotate(-330deg); }
+        .n12 { transform: rotate(0deg);   } .n12 span { display: block; transform: rotate(0deg); }
+
+        /* 中心点（写真のようなシルバー／黒のピン） */
+        .clock-face::after {
             content: '';
             width: 8px;
             height: 8px;
-            background-color: #004d26;
+            background-color: #111111;
+            border: 2px solid #ffffff;
             border-radius: 50%;
             position: absolute;
             top: 50%;
@@ -70,40 +82,44 @@
             z-index: 10;
         }
 
-        /* 針の設定 */
+        /* 針の設定（写真に合わせた、先端が平らで力強い黒い針） */
         .hand {
             position: absolute;
             bottom: 50%;
             left: 50%;
             transform-origin: bottom;
             transform: translateX(-50%) rotate(0deg);
-            background-color: #004d26;
+            background-color: #111111;
         }
-        .hour { width: 5.5px; height: 22px; }
-        .minute { width: 4.5px; height: 32px; }
-        .second { width: 1.5px; height: 36px; background-color: #ff3333; }
+        /* 丸い文字盤にぴったり合う長さに調整 */
+        .hour { width: 6px; height: 32px; border-radius: 2px; }
+        .minute { width: 4.5px; height: 48px; border-radius: 2px; }
+        .second { width: 1.5px; height: 54px; background-color: #ff3333; } /* 秒針は駅時計の赤 */
     </style>
 </head>
 <body>
 
-    <!-- 長方形のアナログ時計（手動配置版） -->
-    <div class="clock">
-        <div class="number n12">12</div>
-        <div class="number n1">1</div>
-        <div class="number n2">2</div>
-        <div class="number n3">3</div>
-        <div class="number n4">4</div>
-        <div class="number n5">5</div>
-        <div class="number n6">6</div>
-        <div class="number n7">7</div>
-        <div class="number n8">8</div>
-        <div class="number n9">9</div>
-        <div class="number n10">10</div>
-        <div class="number n11">11</div>
-        
-        <div class="hand hour" id="hourHand"></div>
-        <div class="hand minute" id="minuteHand"></div>
-        <div class="hand second" id="secondHand"></div>
+    <!-- 外枠（緑の四角） -->
+    <div class="clock-frame">
+        <!-- 内枠（黄色の丸） -->
+        <div class="clock-face">
+            <div class="number n1"><span>1</span></div>
+            <div class="number n2"><span>2</span></div>
+            <div class="number n3"><span>3</span></div>
+            <div class="number n4"><span>4</span></div>
+            <div class="number n5"><span>5</span></div>
+            <div class="number n6"><span>6</span></div>
+            <div class="number n7"><span>7</span></div>
+            <div class="number n8"><span>8</span></div>
+            <div class="number n9"><span>9</span></div>
+            <div class="number n10"><span>10</span></div>
+            <div class="number n11"><span>11</span></div>
+            <div class="number n12"><span>12</span></div>
+            
+            <div class="hand hour" id="hourHand"></div>
+            <div class="hand minute" id="minuteHand"></div>
+            <div class="hand second" id="secondHand"></div>
+        </div>
     </div>
 
     <script>
