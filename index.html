@@ -7,23 +7,21 @@
         body {
             margin: 0;
             padding: 0;
-            /* JRの駅でおなじみの「濃い緑（ダークグリーン）」の筐体 */
-            background-color: #004d26; 
+            background-color: #004d26; /* JRの濃い緑 */
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center; /* 時計を中央に配置 */
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             font-family: "Helvetica Neue", Arial, sans-serif;
             box-sizing: border-box;
-            padding: 0 10px;
         }
 
-        /* アナログ時計部分（蛍光黄色ベース） */
+        /* アナログ時計部分（80pxから96pxへ20%大きく変更） */
         .clock {
-            width: 80px;
-            height: 80px;
+            width: 96px;
+            height: 96px;
             border: 3px solid #ccff00; /* 蛍光黄色の内枠 */
             border-radius: 50%;
             position: relative;
@@ -31,16 +29,16 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* 文字盤の数字 */
+        /* 文字盤の数字（時計の拡大に合わせてフォントサイズを11pxから13pxにアップ） */
         .number {
             position: absolute;
             width: 100%;
             height: 100%;
             text-align: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 900;
-            color: #004d26; /* 濃い緑の文字 */
-            padding-top: 1px;
+            color: #004d26;
+            padding-top: 2px;
             box-sizing: border-box;
         }
         .n1  { transform: rotate(30deg);  } .n1 span  { display: block; transform: rotate(-30deg); }
@@ -70,7 +68,7 @@
             z-index: 10;
         }
 
-        /* 針の設定（蛍光黄色に映える濃い緑の力強い四角い針） */
+        /* 針の設定（時計の拡大に合わせて、長さを約20%長く調整） */
         .hand {
             position: absolute;
             bottom: 50%;
@@ -79,24 +77,14 @@
             transform: translateX(-50%) rotate(0deg);
             background-color: #004d26;
         }
-        .hour { width: 4px; height: 18px; }
-        .minute { width: 3px; height: 26px; }
-        .second { width: 1px; height: 30px; background-color: #ff3333; } /* 秒針は駅時計らしく赤 */
-
-        /* 右側のデジタル秒表示（お好みで非表示にもできます） */
-        .digital-sec {
-            color: #ccff00; /* 蛍光黄色の文字 */
-            font-size: 32px;
-            font-weight: 900;
-            font-family: 'Courier New', Courier, monospace;
-            padding-right: 5px;
-            letter-spacing: 2px;
-        }
+        .hour { width: 4.5px; height: 22px; }
+        .minute { width: 3.5px; height: 32px; }
+        .second { width: 1px; height: 36px; background-color: #ff3333; }
     </style>
 </head>
 <body>
 
-    <!-- 左側：アナログ時計 -->
+    <!-- アナログ時計のみ配置 -->
     <div class="clock">
         <div class="number n1"><span>1</span></div>
         <div class="number n2"><span>2</span></div>
@@ -115,9 +103,6 @@
         <div class="hand second" id="secondHand"></div>
     </div>
 
-    <!-- 右側：デジタル秒数表示 -->
-    <div class="digital-sec" id="digitalSec">00</div>
-
     <script>
         function updateClock() {
             const now = new Date();
@@ -125,14 +110,9 @@
             const minuteDeg = now.getMinutes() * 6;
             const secondDeg = now.getSeconds() * 6;
 
-            // アナログ針の更新
             document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
             document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
             document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
-
-            // デジタル秒数の更新（2桁固定）
-            const secStr = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('digitalSec').innerText = secStr;
         }
 
         setInterval(updateClock, 1000);
