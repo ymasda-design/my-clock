@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>JR Platform Clock</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* JRの駅でおなじみの「濃い緑（ダークグリーン）」の筐体 */
+            background-color: #004d26; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            box-sizing: border-box;
+            padding: 0 10px;
+        }
+
+        /* アナログ時計部分（蛍光黄色ベース） */
+        .clock {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #ccff00; /* 蛍光黄色の内枠 */
+            border-radius: 50%;
+            position: relative;
+            background-color: #ccff00; /* 蛍光黄色の文字盤 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* 文字盤の数字 */
+        .number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 900;
+            color: #004d26; /* 濃い緑の文字 */
+            padding-top: 1px;
+            box-sizing: border-box;
+        }
+        .n1  { transform: rotate(30deg);  } .n1 span  { display: block; transform: rotate(-30deg); }
+        .n2  { transform: rotate(60deg);  } .n2 span  { display: block; transform: rotate(-60deg); }
+        .n3  { transform: rotate(90deg);  } .n3 span  { display: block; transform: rotate(-90deg); }
+        .n4  { transform: rotate(120deg); } .n4 span  { display: block; transform: rotate(-120deg); }
+        .n5  { transform: rotate(150deg); } .n5 span  { display: block; transform: rotate(-150deg); }
+        .n6  { transform: rotate(180deg); } .n6 span  { display: block; transform: rotate(-180deg); }
+        .n7  { transform: rotate(210deg); } .n7 span  { display: block; transform: rotate(-210deg); }
+        .n8  { transform: rotate(240deg); } .n8 span  { display: block; transform: rotate(-240deg); }
+        .n9  { transform: rotate(270deg); } .n9 span  { display: block; transform: rotate(-270deg); }
+        .n10 { transform: rotate(300deg); } .n10 span { display: block; transform: rotate(-300deg); }
+        .n11 { transform: rotate(330deg); } .n11 span { display: block; transform: rotate(-330deg); }
+        .n12 { transform: rotate(0deg);   } .n12 span { display: block; transform: rotate(0deg); }
+
+        /* 中心点 */
+        .clock::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: #004d26;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        /* 針の設定（蛍光黄色に映える濃い緑の力強い四角い針） */
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            transform: translateX(-50%) rotate(0deg);
+            background-color: #004d26;
+        }
+        .hour { width: 4px; height: 18px; }
+        .minute { width: 3px; height: 26px; }
+        .second { width: 1px; height: 30px; background-color: #ff3333; } /* 秒針は駅時計らしく赤 */
+
+        /* 右側のデジタル秒表示（お好みで非表示にもできます） */
+        .digital-sec {
+            color: #ccff00; /* 蛍光黄色の文字 */
+            font-size: 32px;
+            font-weight: 900;
+            font-family: 'Courier New', Courier, monospace;
+            padding-right: 5px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左側：アナログ時計 -->
+    <div class="clock">
+        <div class="number n1"><span>1</span></div>
+        <div class="number n2"><span>2</span></div>
+        <div class="number n3"><span>3</span></div>
+        <div class="number n4"><span>4</span></div>
+        <div class="number n5"><span>5</span></div>
+        <div class="number n6"><span>6</span></div>
+        <div class="number n7"><span>7</span></div>
+        <div class="number n8"><span>8</span></div>
+        <div class="number n9"><span>9</span></div>
+        <div class="number n10"><span>10</span></div>
+        <div class="number n11"><span>11</span></div>
+        <div class="number n12"><span>12</span></div>
+        <div class="hand hour" id="hourHand"></div>
+        <div class="hand minute" id="minuteHand"></div>
+        <div class="hand second" id="secondHand"></div>
+    </div>
+
+    <!-- 右側：デジタル秒数表示 -->
+    <div class="digital-sec" id="digitalSec">00</div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
+            const minuteDeg = now.getMinutes() * 6;
+            const secondDeg = now.getSeconds() * 6;
+
+            // アナログ針の更新
+            document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+            document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+            document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+
+            // デジタル秒数の更新（2桁固定）
+            const secStr = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('digitalSec').innerText = secStr;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
