@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JR Station Clock & Calendar</title>
+    <title>JR Station Clock & Calendar - Fixed</title>
     <style>
         body {
             margin: 0;
@@ -109,7 +109,7 @@
             color: #ccff00; 
         }
 
-        /* ★年月のヘッダー（ボタンを配置するために横並びのレイアウトに変更） */
+        /* 年月のヘッダー（横並びのレイアウト） */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -122,10 +122,10 @@
             font-size: 14px;
             font-weight: 900;
             letter-spacing: 1px;
-            cursor: pointer; /* クリックできることがわかるように変更 */
+            cursor: pointer;
         }
 
-        /* ★前月・翌月切り替えボタンのデザイン */
+        /* ★エラーの原因だった部分を修正した、安全な矢印ボタンの設定 */
         .nav-btn {
             background: none;
             border: none;
@@ -133,12 +133,12 @@
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            padding: 0 6px;
-            user-select: none; /* テキスト選択を無効化 */
-            transition: opacity 0.1s;
+            padding: 0 8px;
+            margin: 0;
+            user-select: none;
         }
         .nav-btn:hover {
-            opacity: 0.7; /* ホバー時に少し透明にしてクリック感を出す */
+            opacity: 0.6;
         }
 
         /* 曜日と日付のグリッド */
@@ -205,11 +205,11 @@
 
     <!-- カレンダー部分 -->
     <div class="calendar-container">
-        <!-- ★左右にボタン、中央に年月テキストを配置 -->
         <div class="calendar-header">
-            <button class="nav-btn" onclick="moveMonth(-1)">◀</button>
-            <div class="calendar-title" id="calendarTitle" onclick="resetToCurrentMonth()" title="クリックで今月に戻る">2026年 7月</div>
-            <button class="nav-btn" onclick="moveMonth(1)">▶</button>
+            <!-- 安全な文字コード形式に変更した矢印ボタン -->
+            <button class="nav-btn" onclick="moveMonth(-1)">&#9664;</button>
+            <div class="calendar-title" id="calendarTitle" onclick="resetToCurrentMonth()" title="クリックで今月に戻る"></div>
+            <button class="nav-btn" onclick="moveMonth(1)">&#9554;</button>
         </div>
         <div class="calendar-grid" id="calendarGrid">
             <!-- 曜日ラベル -->
@@ -225,24 +225,27 @@
     </div>
 
     <script>
-        // 現在表示しているカレンダーの年月を保持する変数
-        let currentDisplayDate = new Date();
+        // 現在表示しているカレンダーの年月を管理する変数
+        var currentDisplayDate = new Date();
 
         // --- 時計の駆動スクリプト ---
         function updateClock() {
-            const now = new Date();
-            const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
-            const minuteDeg = now.getMinutes() * 6;
-            const secondDeg = now.getSeconds() * 6;
+            var now = new Date();
+            var hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
+            var minuteDeg = now.getMinutes() * 6;
+            var secondDeg = now.getSeconds() * 6;
 
-            document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
-            document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
-            document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+            var hHand = document.getElementById('hourHand');
+            var mHand = document.getElementById('minuteHand');
+            var sHand = document.getElementById('secondHand');
+
+            if(hHand) hHand.style.transform = 'translateX(-50%) rotate(' + hourDeg + 'deg)';
+            if(mHand) mHand.style.transform = 'translateX(-50%) rotate(' + minuteDeg + 'deg)';
+            if(sHand) sHand.style.transform = 'translateX(-50%) rotate(' + secondDeg + 'deg)';
             
-            // 日付が変わった瞬間にカレンダーを本日基準で再描画
+            // 日付が変わった瞬間にカレンダーを再描写
             if (now.getSeconds() === 0 && now.getMinutes() === 0 && now.getHours() === 0) {
-                // もし「今月」を表示中であれば自動更新する
-                const today = new Date();
+                var today = new Date();
                 if (currentDisplayDate.getFullYear() === today.getFullYear() && currentDisplayDate.getMonth() === today.getMonth()) {
                     currentDisplayDate = new Date();
                     generateCalendar();
@@ -250,13 +253,13 @@
             }
         }
 
-        // ★前月・翌月ボタンが押された時の処理
+        // 前月・翌月ボタンの移動処理
         function moveMonth(offset) {
             currentDisplayDate.setMonth(currentDisplayDate.getMonth() + offset);
             generateCalendar();
         }
 
-        // ★真ん中の年月をクリックした時に今月に戻る処理
+        // 真ん中の年月をクリックした時に今月に戻る処理
         function resetToCurrentMonth() {
             currentDisplayDate = new Date();
             generateCalendar();
@@ -264,17 +267,18 @@
 
         // --- カレンダーの自動生成スクリプト ---
         function generateCalendar() {
-            const realToday = new Date(); // 実際の「今日」のデータ
-            const year = currentDisplayDate.getFullYear();
-            const month = currentDisplayDate.getMonth();
+            var realToday = new Date(); 
+            var year = currentDisplayDate.getFullYear();
+            var month = currentDisplayDate.getMonth();
 
-            // ヘッダーの年月テキストを更新
-            document.getElementById('calendarTitle').innerText = `${year}年 ${month + 1}月`;
+            var titleElem = document.getElementById('calendarTitle');
+            if(titleElem) {
+                titleElem.innerText = year + '年 ' + (month + 1) + '月';
+            }
 
-            const grid = document.getElementById('calendarGrid');
+            var grid = document.getElementById('calendarGrid');
+            if(!grid) return;
             
-            // 既存の日付セルを一旦クリア
-            const cells = grid.querySelectorAll('.date-cell');
-            cells.forEach(cell => cell.remove());
-
-            const firstDayIndex = new Date(year, month, 1).getDay(); // 1日の曜日
+            // 既存の日付セルのみを削除
+            var cells = grid.querySelectorAll('.date-cell');
+            for(var i = 0; i < cells.length; i++) {
