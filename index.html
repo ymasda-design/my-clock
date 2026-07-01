@@ -19,7 +19,7 @@
             box-sizing: border-box;
         }
 
-        /* 時計の外枠（幅188pxを維持） */
+        /* 時計の外枠 */
         .clock-frame {
             width: 188px;
             height: 160px;
@@ -30,7 +30,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            margin-bottom: 12px; /* カレンダーとの隙間 */
+            margin-bottom: 12px;
         }
 
         /* 文字盤（正円の蛍光黄色） */
@@ -97,28 +97,51 @@
         .minute { width: 4.5px; height: 48px; border-radius: 2px; }
         .second { width: 1.5px; height: 54px; background-color: #ff3333; }
 
-        /* ★カレンダー全体のデザイン設定（時計の幅188pxにぴったり合わせる） */
+        /* カレンダー全体のデザイン設定 */
         .calendar-container {
             width: 188px;
             background-color: #004d26;
-            border: 4px solid #ccff00; /* 時計とお揃いの蛍光黄色枠 */
+            border: 4px solid #ccff00; 
             border-radius: 16px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             padding: 8px;
             box-sizing: border-box;
-            color: #ccff00; /* 文字はすべて蛍光黄色 */
+            color: #ccff00; 
         }
 
-        /* 年月のヘッダー（例：2026年 7月） */
+        /* ★年月のヘッダー（ボタンを配置するために横並びのレイアウトに変更） */
         .calendar-header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        /* 年月のテキスト部分 */
+        .calendar-title {
             font-size: 14px;
             font-weight: 900;
-            margin-bottom: 6px;
             letter-spacing: 1px;
+            cursor: pointer; /* クリックできることがわかるように変更 */
         }
 
-        /* 曜日と日付のグリッド（7列固定） */
+        /* ★前月・翌月切り替えボタンのデザイン */
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #ccff00;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 6px;
+            user-select: none; /* テキスト選択を無効化 */
+            transition: opacity 0.1s;
+        }
+        .nav-btn:hover {
+            opacity: 0.7; /* ホバー時に少し透明にしてクリック感を出す */
+        }
+
+        /* 曜日と日付のグリッド */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -135,8 +158,8 @@
             border-bottom: 1px solid rgba(204, 255, 0, 0.4);
             margin-bottom: 2px;
         }
-        .sun { color: #ff5555; } /* 日曜日は赤系 */
-        .sat { color: #55aaff; } /* 土曜日は青系 */
+        .sun { color: #ff5555; } 
+        .sat { color: #55aaff; } 
 
         /* 日付セルの設定 */
         .date-cell {
@@ -147,7 +170,7 @@
             border-radius: 3px;
         }
 
-        /* ★今日の日付を強調するデザイン（反転カラーで駅の掲示板風に） */
+        /* 今日の日付を強調するデザイン */
         .today {
             background-color: #ccff00;
             color: #004d26;
@@ -182,7 +205,12 @@
 
     <!-- カレンダー部分 -->
     <div class="calendar-container">
-        <div class="calendar-header" id="calendarTitle">2026年 1月</div>
+        <!-- ★左右にボタン、中央に年月テキストを配置 -->
+        <div class="calendar-header">
+            <button class="nav-btn" onclick="moveMonth(-1)">◀</button>
+            <div class="calendar-title" id="calendarTitle" onclick="resetToCurrentMonth()" title="クリックで今月に戻る">2026年 7月</div>
+            <button class="nav-btn" onclick="moveMonth(1)">▶</button>
+        </div>
         <div class="calendar-grid" id="calendarGrid">
             <!-- 曜日ラベル -->
             <div class="day-label sun">日</div>
@@ -192,11 +220,14 @@
             <div class="day-label">木</div>
             <div class="day-label">金</div>
             <div class="day-label sat">土</div>
-            <!-- 日付セルがここに自動挿入されます -->
+            <!-- 日付セルが自動挿入されます -->
         </div>
     </div>
 
     <script>
+        // 現在表示しているカレンダーの年月を保持する変数
+        let currentDisplayDate = new Date();
+
         // --- 時計の駆動スクリプト ---
         function updateClock() {
             const now = new Date();
@@ -208,63 +239,42 @@
             document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
             document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
             
-            // 日付が変わった瞬間にカレンダーも更新されるよう毎秒チェック
+            // 日付が変わった瞬間にカレンダーを本日基準で再描画
             if (now.getSeconds() === 0 && now.getMinutes() === 0 && now.getHours() === 0) {
-                generateCalendar();
+                // もし「今月」を表示中であれば自動更新する
+                const today = new Date();
+                if (currentDisplayDate.getFullYear() === today.getFullYear() && currentDisplayDate.getMonth() === today.getMonth()) {
+                    currentDisplayDate = new Date();
+                    generateCalendar();
+                }
             }
+        }
+
+        // ★前月・翌月ボタンが押された時の処理
+        function moveMonth(offset) {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() + offset);
+            generateCalendar();
+        }
+
+        // ★真ん中の年月をクリックした時に今月に戻る処理
+        function resetToCurrentMonth() {
+            currentDisplayDate = new Date();
+            generateCalendar();
         }
 
         // --- カレンダーの自動生成スクリプト ---
         function generateCalendar() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth(); // 0が1月、11が12月
-            const today = now.getDate();
+            const realToday = new Date(); // 実際の「今日」のデータ
+            const year = currentDisplayDate.getFullYear();
+            const month = currentDisplayDate.getMonth();
 
             // ヘッダーの年月テキストを更新
             document.getElementById('calendarTitle').innerText = `${year}年 ${month + 1}月`;
 
             const grid = document.getElementById('calendarGrid');
             
-            // 既存の日付セル（曜日ラベル以外）を一旦削除してクリア
+            // 既存の日付セルを一旦クリア
             const cells = grid.querySelectorAll('.date-cell');
             cells.forEach(cell => cell.remove());
 
-            // 今月の1日と末日の情報を取得
-            const firstDayIndex = new Date(year, month, 1).getDay(); // 1日の曜日 (0:日〜6:土)
-            const lastDate = new Date(year, month + 1, 0).getDate(); // 今月が何日まであるか
-
-            // 1日より前の空白のセルを埋める
-            for (let i = 0; i < firstDayIndex; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'date-cell';
-                grid.appendChild(emptyCell);
-            }
-
-            // 1日から末日までをループで生成して追加
-            for (let date = 1; date <= lastDate; date++) {
-                const dateCell = document.createElement('div');
-                dateCell.className = 'date-cell';
-                dateCell.innerText = date;
-
-                // 土日の色分け用クラス（列の位置から判定）
-                const currentDayOfWeek = (firstDayIndex + date - 1) % 7;
-                if (currentDayOfWeek === 0) dateCell.classList.add('sun');
-                if (currentDayOfWeek === 6) dateCell.classList.add('sat');
-
-                // ★ 今日（当日）のセルの場合、特別なスタイル（背景が反転する）を適用
-                if (date === today) {
-                    dateCell.classList.add('today');
-                }
-
-                grid.appendChild(dateCell);
-            }
-        }
-
-        // 初期起動
-        setInterval(updateClock, 1000);
-        updateClock();
-        generateCalendar();
-    </script>
-</body>
-</html>
+            const firstDayIndex = new Date(year, month, 1).getDay(); // 1日の曜日
