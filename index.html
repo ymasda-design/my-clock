@@ -2,140 +2,251 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JR Station Clock - Perfect Replica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時計 ＆ カレンダー ウィジェット</title>
     <style>
+        /* 全体の配置設定 */
         body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            padding: 0;
-            background-color: #004d26; /* JRの濃い緑 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            font-family: "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        /* ウィジェット全体のコンテナ */
+        .widget-container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 360px;
+            padding: 24px;
             box-sizing: border-box;
-        }
-
-        /* ★外枠：ご要望通り縦方向を大きくし、本物のような大きな角丸にしました */
-        .clock-frame {
-            width: 188px;
-            height: 160px;
-            background-color: #004d26; 
-            border: 4px solid #ccff00; /* 蛍光黄色の細い縁ライン */
-            border-radius: 24px;       /* 本物らしい大きな角丸 */
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            flex-direction: column;
+            gap: 20px; /* 時計とカレンダーの間の隙間 */
         }
 
-        /* ★文字盤：写真通り、綺麗な正円（丸型）の蛍光黄色ベース */
-        .clock-face {
-            width: 136px;
-            height: 136px;
-            border-radius: 50%;
-            position: relative;
-            background-color: #ccff00;
-        }
-
-        /* 数字全体の共通設定（円形に綺麗に配置するためのベース） */
-        .number {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        /* ==============================
+           時計セクションのスタイル
+        ============================== */
+        .clock-section {
             text-align: center;
-            font-size: 18px; /* 写真に合わせて数字を少し大きめで力強く */
-            font-weight: 900;
-            color: #111111;
-            padding-top: 2px;
-            box-sizing: border-box;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #f0f2f5; /* 区切り線 */
         }
 
-        /* 本物と同じ、綺麗な正円の角度に合わせて回転配置 */
-        .n1  { transform: rotate(30deg);  } .n1 span  { display: block; transform: rotate(-30deg); }
-        .n2  { transform: rotate(60deg);  } .n2 span  { display: block; transform: rotate(-60deg); }
-        .n3  { transform: rotate(90deg);  } .n3 span  { display: block; transform: rotate(-90deg); }
-        .n4  { transform: rotate(120deg); } .n4 span  { display: block; transform: rotate(-120deg); }
-        .n5  { transform: rotate(150deg); } .n5 span  { display: block; transform: rotate(-150deg); }
-        .n6  { transform: rotate(180deg); } .n6 span  { display: block; transform: rotate(-180deg); }
-        .n7  { transform: rotate(210deg); } .n7 span  { display: block; transform: rotate(-210deg); }
-        .n8  { transform: rotate(240deg); } .n8 span  { display: block; transform: rotate(-240deg); }
-        .n9  { transform: rotate(270deg); } .n9 span  { display: block; transform: rotate(-270deg); }
-        .n10 { transform: rotate(300deg); } .n10 span { display: block; transform: rotate(-300deg); }
-        .n11 { transform: rotate(330deg); } .n11 span { display: block; transform: rotate(-330deg); }
-        .n12 { transform: rotate(0deg);   } .n12 span { display: block; transform: rotate(0deg); }
+        .clock-time {
+            font-size: 48px;
+            font-weight: 700;
+            color: #333333;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums; /* 数字の幅を統一してガタつき防止 */
+        }
 
-        /* 中心点（写真のようなシルバー／黒のピン） */
-        .clock-face::after {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background-color: #111111;
-            border: 2px solid #ffffff;
+        .clock-date {
+            font-size: 14px;
+            color: #666666;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ==============================
+           カレンダーセクションのスタイル
+        ============================== */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333333;
+            font-weight: 600;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #007bff;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: #f0f7ff;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .day-of-week {
+            font-size: 11px;
+            font-weight: bold;
+            color: #888888;
+            padding-bottom: 4px;
+        }
+
+        .calendar-day {
+            font-size: 13px;
+            color: #333333;
+            height: 34px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        /* 針の設定（写真に合わせた、先端が平らで力強い黒い針） */
-        .hand {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform-origin: bottom;
-            transform: translateX(-50%) rotate(0deg);
-            background-color: #111111;
+        .calendar-day:hover:not(.empty) {
+            background-color: #f0f2f5;
         }
-        /* 丸い文字盤にぴったり合う長さに調整 */
-        .hour { width: 6px; height: 32px; border-radius: 2px; }
-        .minute { width: 4.5px; height: 48px; border-radius: 2px; }
-        .second { width: 1.5px; height: 54px; background-color: #ff3333; } /* 秒針は駅時計の赤 */
+
+        .empty {
+            cursor: default;
+        }
+
+        /* 今日のハイライト */
+        .today {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* 土日の色分け */
+        .day-of-week:nth-child(7n+1), .calendar-grid div:nth-child(7n+1):not(.empty):not(.today) {
+            color: #dc3545;
+        }
+        .day-of-week:nth-child(7n), .calendar-grid div:nth-child(7n):not(.empty):not(.today) {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 外枠（緑の四角） -->
-    <div class="clock-frame">
-        <!-- 内枠（黄色の丸） -->
-        <div class="clock-face">
-            <div class="number n1"><span>1</span></div>
-            <div class="number n2"><span>2</span></div>
-            <div class="number n3"><span>3</span></div>
-            <div class="number n4"><span>4</span></div>
-            <div class="number n5"><span>5</span></div>
-            <div class="number n6"><span>6</span></div>
-            <div class="number n7"><span>7</span></div>
-            <div class="number n8"><span>8</span></div>
-            <div class="number n9"><span>9</span></div>
-            <div class="number n10"><span>10</span></div>
-            <div class="number n11"><span>11</span></div>
-            <div class="number n12"><span>12</span></div>
-            
-            <div class="hand hour" id="hourHand"></div>
-            <div class="hand minute" id="minuteHand"></div>
-            <div class="hand second" id="secondHand"></div>
+    <div class="widget-container">
+        <!-- 【時計エリア】 -->
+        <div class="clock-section">
+            <div class="clock-time" id="clock-time">00:00:00</div>
+            <div class="clock-date" id="clock-date">----年--月--日 (水)</div>
+        </div>
+
+        <!-- 【カレンダーエリア】 -->
+        <div class="calendar-section">
+            <div class="calendar-header">
+                <button class="nav-btn" id="prev-month">&lt;</button>
+                <h2 id="month-year-display">----年 --月</h2>
+                <button class="nav-btn" id="next-month">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendar-days"></div>
         </div>
     </div>
 
     <script>
+        /* ==============================
+           時計の制御処理
+        ============================== */
         function updateClock() {
             const now = new Date();
-            const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
-            const minuteDeg = now.getMinutes() * 6;
-            const secondDeg = now.getSeconds() * 6;
+            
+            // 時間のシミュレーション
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock-time').textContent = `${hours}:${minutes}:${seconds}`;
 
-            document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
-            document.getElementById('minuteHand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
-            document.getElementById('secondHand').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+            // 日付の表示更新
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const dayList = ['日', '月', '火', '水', '木', '金', '土'];
+            const dayOfWeek = dayList[now.getDay()];
+            
+            document.getElementById('clock-date').textContent = `${year}年${month}月${date}日 (${dayOfWeek})`;
+        }
+        
+        // 1秒ごとに時計を更新
+        setInterval(updateClock, 1000);
+        updateClock(); // 初回起動用
+
+
+        /* ==============================
+           カレンダーの制御処理
+        ============================== */
+        const display = document.getElementById('month-year-display');
+        const daysContainer = document.getElementById('calendar-days');
+        const prevBtn = document.getElementById('prev-month');
+        const nextBtn = document.getElementById('next-month');
+
+        let calendarDate = new Date();
+        const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+
+        function renderCalendar() {
+            daysContainer.innerHTML = '';
+
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+
+            display.textContent = `${year}年 ${month + 1}月`;
+
+            // 曜日ヘッダー
+            weekdays.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.classList.add('day-of-week');
+                dayHeader.textContent = day;
+                daysContainer.appendChild(dayHeader);
+            });
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            // 空白埋め
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('calendar-day', 'empty');
+                daysContainer.appendChild(emptyCell);
+            }
+
+            // 日付生成
+            for (let day = 1; day <= lastDay; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.classList.add('calendar-day');
+                dayCell.textContent = day;
+
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayCell.classList.add('today');
+                }
+
+                daysContainer.appendChild(dayCell);
+            }
         }
 
-        setInterval(updateClock, 1000);
-        updateClock();
+        prevBtn.addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        renderCalendar();
     </script>
 </body>
 </html>
