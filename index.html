@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JR風アナログ時計 ＆ カレンダーウィジェット</title>
+    <title>JR風アナログ時計 ＆ カレンダーウィジェット（修正版）</title>
     <style>
         /* 画面全体の背景 */
         body {
@@ -16,7 +16,7 @@
             margin: 0;
         }
 
-        /* 【重要】画像の「ダークグリーンの本体」と「黄緑の太い外枠」を完全再現 */
+        /* 外枠デザインの完全再現 */
         .widget-container {
             background-color: #004722; /* 深いダークグリーン */
             border: 6px solid #bfff00; /* 鮮やかな黄緑の角丸枠 */
@@ -32,17 +32,17 @@
         }
 
         /* ==============================
-           時計セクション（画像のデザインを再現）
+           時計セクション（確実な手動配置版）
         ============================== */
         .clock-section {
             position: relative;
             width: 220px;
             height: 220px;
-            background-color: #bfff00; /* 画像と同じ鮮やかな黄緑の文字盤 */
+            background-color: #bfff00; /* 鮮やかな黄緑の文字盤 */
             border-radius: 50%;
         }
 
-        /* 時計の中心のピン（黒い円に白いドット） */
+        /* 時計の中心のピン */
         .clock-center {
             position: absolute;
             width: 14px;
@@ -56,7 +56,7 @@
             z-index: 10;
         }
 
-        /* 文字盤の数字（1〜12の太字） */
+        /* 1〜12の数字をCSSで確実に外周へ固定配置 */
         .clock-number {
             position: absolute;
             width: 30px;
@@ -66,11 +66,22 @@
             color: #000000;
             text-align: center;
             line-height: 30px;
-            left: calc(50% - 15px);
-            top: calc(50% - 15px);
         }
+        /* 各数字の個別位置（エラーが起きない絶対座標指定） */
+        .n12 { top: 5px;   left: calc(50% - 15px); }
+        .n1  { top: 18px;  left: 152px; }
+        .n2  { top: 52px;  left: 184px; }
+        .n3  { top: 95px;  left: 195px; }
+        .n4  { top: 138px; left: 184px; }
+        .n5  { top: 172px; left: 152px; }
+        .n6  { bottom: 5px; left: calc(50% - 15px); }
+        .n7  { top: 172px; left: 38px; }
+        .n8  { top: 138px; left: 6px; }
+        .n9  { top: 95px;  left: -5px; }
+        .n10 { top: 52px;  left: 6px; }
+        .n11 { top: 18px;  left: 38px; }
 
-        /* 各針のデザイン（画像通りの太さと形状） */
+        /* 各針のデザイン（画像通りの形状） */
         .hand {
             position: absolute;
             bottom: 50%;
@@ -82,10 +93,10 @@
         /* どっしり太い短針 */
         .hour-hand {
             width: 10px;
-            height: 50px;
+            height: 52px;
             background: #000000;
             margin-left: -5px;
-            border-radius: 5px 5px 3px 3px;
+            border-radius: 5px 5px 2px 2px;
         }
 
         /* スラッと長い長針 */
@@ -101,12 +112,12 @@
         .second-hand {
             width: 2px;
             height: 90px;
-            background: #ff5500; /* 画像のオレンジ色 */
+            background: #ff5500;
             margin-left: -1px;
         }
 
         /* ==============================
-           カレンダーセクション（時計の色合いに統一）
+           カレンダーセクション
         ============================== */
         .calendar-section {
             width: 100%;
@@ -121,7 +132,7 @@
             margin-bottom: 14px;
         }
 
-        /* 年月表示（黄緑の光る文字） */
+        /* 年月表示 */
         .calendar-header h2 {
             margin: 0;
             font-size: 20px;
@@ -134,7 +145,7 @@
             background: #002d15;
             border: 1px solid #bfff00;
             color: #bfff00;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             padding: 6px 14px;
@@ -154,7 +165,7 @@
             text-align: center;
         }
 
-        /* 曜日の色（ベースは白、土日は見やすく調整） */
+        /* 曜日の行 */
         .day-of-week {
             font-size: 13px;
             font-weight: bold;
@@ -173,11 +184,11 @@
             justify-content: center;
             align-items: center;
             border-radius: 6px;
-            transition: background 0.2s;
         }
 
         .calendar-day:hover:not(.empty) {
-            background-color: rgba(191, 255, 0, 0.15);
+            background-color: rgba(191, 255, 0, 0.2);
+            cursor: pointer;
         }
 
         .empty {
@@ -192,64 +203,57 @@
             box-shadow: 0 0 10px rgba(191, 255, 0, 0.5);
         }
 
-        /* 土曜（明るい青）と日曜（明るい赤）の色分け */
+        /* 土日の識別カラー */
         .day-of-week:nth-child(7n+1), .calendar-grid div:nth-child(7n+1):not(.empty):not(.today) {
-            color: #ff6666;
+            color: #ff6666; /* 日曜（赤） */
         }
         .day-of-week:nth-child(7n), .calendar-grid div:nth-child(7n):not(.empty):not(.today) {
-            color: #66b2ff;
+            color: #66b2ff; /* 土曜（青） */
         }
     </style>
 </head>
 <body>
 
     <div class="widget-container">
-        <!-- 【アナログ時計エリア（完全再現版）】 -->
+        <!-- 【アナログ時計エリア（確実固定表示版）】 -->
         <div class="clock-section">
-            <!-- 1〜12の数字をJavaScriptで円状に正確に配置 -->
-            <div id="clock-numbers"></div>
+            <!-- 1〜12の数字をHTML側で最初から配置 -->
+            <div class="clock-number n12">12</div>
+            <div class="clock-number n1">1</div>
+            <div class="clock-number n2">2</div>
+            <div class="clock-number n3">3</div>
+            <div class="clock-number n4">4</div>
+            <div class="clock-number n5">5</div>
+            <div class="clock-number n6">6</div>
+            <div class="clock-number n7">7</div>
+            <div class="clock-number n8">8</div>
+            <div class="clock-number n9">9</div>
+            <div class="clock-number n10">10</div>
+            <div class="clock-number n11">11</div>
             
+            <!-- 時計の針 -->
             <div class="hand hour-hand" id="hour-hand"></div>
             <div class="hand minute-hand" id="minute-hand"></div>
             <div class="hand second-hand" id="second-hand"></div>
             <div class="clock-center"></div>
         </div>
 
-        <!-- 【色合いを合わせたカレンダーエリア】 -->
+        <!-- 【カレンダーエリア】 -->
         <div class="calendar-section">
             <div class="calendar-header">
                 <button class="nav-btn" id="prev-month">前月</button>
                 <h2 id="month-year-display">----年 --月</h2>
                 <button class="nav-btn" id="next-month">次月</button>
             </div>
-            <div class="calendar-grid" id="calendar-days"></div>
+            <div class="calendar-grid" id="calendar-days">
+                <!-- ここにカレンダーの日付が生成されます -->
+            </div>
         </div>
     </div>
 
     <script>
         /* ==============================
-           時計の数字を画像と同じ位置に配置
-        ============================== */
-        const numbersContainer = document.getElementById('clock-numbers');
-        const radius = 82; // 中心からの距離(px)
-
-        for (let i = 1; i <= 12; i++) {
-            const numDiv = document.createElement('div');
-            numDiv.classList.add('clock-number');
-            numDiv.textContent = i;
-            
-            // 角度の計算（12時が0度、1時間は30度）
-            const angle = (i * 30) * (Math.PI / 180);
-            const x = Math.sin(angle) * radius;
-            const y = -Math.cos(angle) * radius;
-            
-            // CSSの移動で数字を丸く並べる
-            numDiv.style.transform = `translate(${x}px, ${y}px)`;
-            numbersContainer.appendChild(numDiv);
-        }
-
-        /* ==============================
-           時計の針を動かす処理
+           時計の針を現在時刻に動かす処理
         ============================== */
         function updateClock() {
             const now = new Date();
@@ -257,7 +261,7 @@
             const minutes = now.getMinutes();
             const seconds = now.getSeconds();
 
-            // 画像のコチコチ動く仕様（ステップ運針）
+            // 1秒ごとにカチカチ動く設定
             const secondDeg = seconds * 6;
             const minuteDeg = (minutes * 6) + (seconds * 0.1);
             const hourDeg = ((hours % 12) * 30) + (minutes * 0.5);
@@ -267,12 +271,13 @@
             document.getElementById('hour-hand').style.transform = `rotate(${hourDeg}deg)`;
         }
 
+        // 1秒ごとに時計を更新
         setInterval(updateClock, 1000);
         updateClock();
 
 
         /* ==============================
-           カレンダーの処理
+           カレンダーを生成・更新する処理
         ============================== */
         const display = document.getElementById('month-year-display');
         const daysContainer = document.getElementById('calendar-days');
@@ -288,8 +293,10 @@
             const year = calendarDate.getFullYear();
             const month = calendarDate.getMonth();
 
+            // 「◯◯年 ◯月」を書き換え
             display.textContent = `${year}年 ${month + 1}月`;
 
+            // 曜日（日〜土）を生成
             weekdays.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.classList.add('day-of-week');
@@ -301,21 +308,13 @@
             const lastDay = new Date(year, month + 1, 0).getDate();
             const today = new Date();
 
+            // 初日の前の空白マス
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.classList.add('calendar-day', 'empty');
                 daysContainer.appendChild(emptyCell);
             }
 
+            // 日付（1日〜最終日）を生成
             for (let day = 1; day <= lastDay; day++) {
                 const dayCell = document.createElement('div');
-                dayCell.classList.add('calendar-day');
-                dayCell.textContent = day;
-
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                    dayCell.classList.add('today');
-                }
-
-                daysContainer.appendChild(dayCell);
-            }
-        }
