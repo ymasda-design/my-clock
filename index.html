@@ -7,7 +7,7 @@
         body {
             margin: 0;
             padding: 10px 0;
-            background-color: #111111; /* ★外側を濃い緑から「黒」に変更 */
+            background-color: #111111; /* 外側は黒 */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -23,8 +23,8 @@
         .clock-frame {
             width: 188px;
             height: 160px;
-            background-color: #004d26; /* 筐体の濃い緑は維持 */
-            border: 4px solid #b8e600; /* ★枠の蛍光イエローを少し暗めに調整 */
+            background-color: #004d26; 
+            border: 4px solid #b8e600; /* 少し暗めの蛍光黄色 */
             border-radius: 24px;       
             display: flex;
             align-items: center;
@@ -39,7 +39,7 @@
             height: 136px;
             border-radius: 50%;
             position: relative;
-            background-color: #b8e600; /* ★文字盤の蛍光イエローを少し暗めに調整 */
+            background-color: #b8e600; 
         }
 
         /* 数字全体の共通設定 */
@@ -101,12 +101,12 @@
         .calendar-container {
             width: 188px;
             background-color: #004d26;
-            border: 4px solid #b8e600; /* ★カレンダー枠のイエローも少し暗めに調整 */
+            border: 4px solid #b8e600; 
             border-radius: 16px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             padding: 8px;
             box-sizing: border-box;
-            color: #b8e600; /* ★カレンダー文字のイエローも少し暗めに調整 */
+            color: #b8e600; 
         }
 
         /* 年月のヘッダー */
@@ -129,7 +129,7 @@
         .nav-btn {
             background: none;
             border: none;
-            color: #b8e600; /* ★少し暗めのイエロー */
+            color: #b8e600; 
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
@@ -172,7 +172,7 @@
 
         /* 今日の日付を強調するデザイン */
         .today {
-            background-color: #b8e600; /* ★今日の背景も少し暗めのイエローに調整 */
+            background-color: #b8e600; 
             color: #004d26;
             font-weight: 900;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
@@ -223,6 +223,12 @@
         </div>
     </div>
     <script>
+        // ★起動した瞬間に、ウィジェットとして最適なサイズにウィンドウを強制変形させます
+        window.addEventListener('DOMContentLoaded', function() {
+            // 横幅210px、高さ410px（カレンダーが余裕を持って収まるサイズ）にリサイズ
+            window.resizeTo(210, 410);
+        });
+
         // 現在表示しているカレンダーの年月を管理する変数
         var currentDisplayDate = new Date();
 
