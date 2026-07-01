@@ -7,7 +7,7 @@
         body {
             margin: 0;
             padding: 10px 0;
-            background-color: #004d26; /* JRの濃い緑 */
+            background-color: #111111; /* ★外側を濃い緑から「黒」に変更 */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -23,8 +23,8 @@
         .clock-frame {
             width: 188px;
             height: 160px;
-            background-color: #004d26; 
-            border: 4px solid #ccff00; 
+            background-color: #004d26; /* 筐体の濃い緑は維持 */
+            border: 4px solid #b8e600; /* ★枠の蛍光イエローを少し暗めに調整 */
             border-radius: 24px;       
             display: flex;
             align-items: center;
@@ -33,13 +33,13 @@
             margin-bottom: 12px;
         }
 
-        /* 文字盤（正円の蛍光黄色） */
+        /* 文字盤（正円の少し暗めの蛍光黄色） */
         .clock-face {
             width: 136px;
             height: 136px;
             border-radius: 50%;
             position: relative;
-            background-color: #ccff00;
+            background-color: #b8e600; /* ★文字盤の蛍光イエローを少し暗めに調整 */
         }
 
         /* 数字全体の共通設定 */
@@ -101,12 +101,12 @@
         .calendar-container {
             width: 188px;
             background-color: #004d26;
-            border: 4px solid #ccff00; 
+            border: 4px solid #b8e600; /* ★カレンダー枠のイエローも少し暗めに調整 */
             border-radius: 16px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             padding: 8px;
             box-sizing: border-box;
-            color: #ccff00; 
+            color: #b8e600; /* ★カレンダー文字のイエローも少し暗めに調整 */
         }
 
         /* 年月のヘッダー */
@@ -129,7 +129,7 @@
         .nav-btn {
             background: none;
             border: none;
-            color: #ccff00;
+            color: #b8e600; /* ★少し暗めのイエロー */
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
@@ -155,7 +155,7 @@
         .day-label {
             font-size: 10px;
             padding-bottom: 4px;
-            border-bottom: 1px solid rgba(204, 255, 0, 0.4);
+            border-bottom: 1px solid rgba(184, 230, 0, 0.4);
             margin-bottom: 2px;
         }
         .sun { color: #ff5555; } 
@@ -172,7 +172,7 @@
 
         /* 今日の日付を強調するデザイン */
         .today {
-            background-color: #ccff00;
+            background-color: #b8e600; /* ★今日の背景も少し暗めのイエローに調整 */
             color: #004d26;
             font-weight: 900;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
